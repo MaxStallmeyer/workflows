@@ -1,0 +1,43 @@
+name: news-relay
+
+on:
+  schedule:
+    # Every 30 min. Use '0 * * * *' (hourly) if you keep the repo PRIVATE,
+    # to stay comfortably under the 2,000 free Actions-minutes/month cap.
+    - cron: "*/30 * * * *"
+  workflow_dispatch: {}   # lets you run it manually from the Actions tab
+
+permissions:
+  contents: write          # needed to commit the dedup state back
+
+concurrency:
+  group: news-relay
+  cancel-in-progress: false
+
+jobs:
+  relay:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install -r requirements.txt
+
+      - name: Run relay
+        env:
+          DISCORD_WEBHOOK_MACRO:    ${{ secrets.DISCORD_WEBHOOK_MACRO }}
+          DISCORD_WEBHOOK_EQUITIES: ${{ secrets.DISCORD_WEBHOOK_EQUITIES }}
+          DISCORD_WEBHOOK_PEMA:     ${{ secrets.DISCORD_WEBHOOK_PEMA }}
+          DISCORD_WEBHOOK_CRYPTO:   ${{ secrets.DISCORD_WEBHOOK_CRYPTO }}
+        run: python relay.py
+
+      - name: Commit updated state
+        run: |
+          git config user.name  "news-relay-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add state/seen_ids.json
+          git diff --staged --quiet || git commit -m "update dedup state [skip ci]"
+          git push

@@ -1,0 +1,19 @@
+# Local secrets — never commit these (real config lives in GitHub Secrets)
+.env
+.env.*
+*.local
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# OS / editor noise
+.DS_Store
+.idea/
+.vscode/
+
+# NOTE: do NOT ignore state/seen_ids.json — it must be committed.
+# The workflow writes the dedup state back to it every run.

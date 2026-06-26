@@ -1,0 +1,80 @@
+# =============================================================================
+# news-relay config
+# =============================================================================
+# Identifies the relay to feed servers. No email needed (the SEC feed, the only
+# one that required a contact, has been removed).
+user_agent: "news-relay/1.0"
+
+# Max new items to post per feed per run. Keeps any single noisy feed from
+# flooding a channel.
+max_items_per_run: 6
+
+# Each feed routes to a Discord channel via a webhook stored as a GitHub
+# Actions SECRET (never put the actual webhook URL here). The `webhook:` value
+# is the NAME of the secret/env var, not the URL.
+#
+# include / exclude are optional keyword filters (case-insensitive).
+#
+# NOTE: feed URLs drift over time. The Google News RSS entries are bulletproof
+# and you can clone them for any ticker or topic by editing the q= query.
+# Verify the others load once; swap any dead one for a Google News query.
+
+feeds:
+  # ---- MACRO -------------------------------------------------------------
+  - name: "Fed — Press Releases"
+    url: "https://www.federalreserve.gov/feeds/press_all.xml"
+    webhook: DISCORD_WEBHOOK_MACRO
+    color: 15844367
+
+  - name: "Calculated Risk"
+    url: "https://www.calculatedriskblog.com/feeds/posts/default?alt=rss"
+    webhook: DISCORD_WEBHOOK_MACRO
+    color: 15844367
+
+  - name: "NBER — New Working Papers"
+    url: "https://www.nber.org/rss/new.xml"
+    webhook: DISCORD_WEBHOOK_MACRO
+    color: 15844367
+
+  - name: "Macro (Google News)"
+    url: "https://news.google.com/rss/search?q=(inflation+OR+%22Federal+Reserve%22+OR+%22interest+rates%22)+when:1d&hl=en-US&gl=US&ceid=US:en"
+    webhook: DISCORD_WEBHOOK_MACRO
+    color: 15844367
+
+  # ---- EQUITIES / MARKETS ------------------------------------------------
+  - name: "CNBC — Markets"
+    url: "https://www.cnbc.com/id/100003114/device/rss/rss.html"
+    webhook: DISCORD_WEBHOOK_EQUITIES
+    color: 3066993
+
+  - name: "Markets (Google News)"
+    url: "https://news.google.com/rss/search?q=(stock+market+OR+earnings)+when:1d&hl=en-US&gl=US&ceid=US:en"
+    webhook: DISCORD_WEBHOOK_EQUITIES
+    color: 3066993
+
+  # ---- PRIVATE EQUITY / M&A ---------------------------------------------
+  - name: "PE Hub"
+    url: "https://www.pehub.com/feed/"
+    webhook: DISCORD_WEBHOOK_PEMA
+    color: 10181046
+
+  - name: "PE / M&A (Google News)"
+    url: "https://news.google.com/rss/search?q=(%22private+equity%22+OR+%22leveraged+buyout%22+OR+acquisition+OR+%22take+private%22)+when:1d&hl=en-US&gl=US&ceid=US:en"
+    webhook: DISCORD_WEBHOOK_PEMA
+    color: 10181046
+
+  # ---- CRYPTO / DEFI -----------------------------------------------------
+  - name: "The Block"
+    url: "https://www.theblock.co/rss.xml"
+    webhook: DISCORD_WEBHOOK_CRYPTO
+    color: 15105570
+
+  - name: "Blockworks"
+    url: "https://blockworks.co/feed"
+    webhook: DISCORD_WEBHOOK_CRYPTO
+    color: 15105570
+
+  - name: "CoinDesk"
+    url: "https://www.coindesk.com/arc/outboundfeeds/rss/"
+    webhook: DISCORD_WEBHOOK_CRYPTO
+    color: 15105570
